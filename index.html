@@ -129,6 +129,12 @@
             box-shadow: 0 0 20px rgba(0, 200, 255, 0.1);
         }
 
+        .box .opts button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
         .bars {
             display: flex;
             gap: 12px;
@@ -189,17 +195,37 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        .giro {
+        /* ===== GIRO (oculto hasta finalizar encuesta) ===== */
+        .giro-wrapper {
+            display: none;
             margin-top: 14px;
-            padding: 12px 16px;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .giro-wrapper.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .giro {
+            padding: 14px 18px;
             background: rgba(255, 200, 0, 0.04);
             border-left: 3px solid #ffd200;
             border-radius: 0 10px 10px 0;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.85);
             font-style: italic;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            display: none;
+            font-size: 0.92rem;
+            line-height: 1.6;
         }
 
         .giro strong {
@@ -209,15 +235,52 @@
 
         .giro .final {
             display: block;
-            margin-top: 8px;
+            margin-top: 10px;
             font-size: 1rem;
             color: #fff;
             font-weight: 600;
             font-style: normal;
             background: rgba(255, 200, 0, 0.06);
-            padding: 8px 14px;
+            padding: 10px 16px;
             border-radius: 8px;
             border: 1px solid rgba(255, 200, 0, 0.06);
+        }
+
+        /* ===== BOTÓN FINALIZAR ENCUESTA ===== */
+        .btn-finalizar {
+            background: linear-gradient(135deg, #ff6b6b, #ff3366);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            padding: 10px 28px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin-top: 12px;
+            box-shadow: 0 4px 20px rgba(255, 50, 100, 0.15);
+        }
+
+        .btn-finalizar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 35px rgba(255, 50, 100, 0.25);
+        }
+
+        .btn-finalizar:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-finalizar.finalizado {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
+        .btn-finalizar.finalizado:hover {
+            transform: none;
         }
 
         .btn-reset {
@@ -267,6 +330,14 @@
             color: #fbbf24;
         }
 
+        .acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 10px;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .card {
@@ -295,13 +366,29 @@
             }
 
             .giro {
-                font-size: 0.8rem;
-                padding: 10px 12px;
+                font-size: 0.82rem;
+                padding: 10px 14px;
             }
 
             .giro .final {
                 font-size: 0.85rem;
-                padding: 6px 10px;
+                padding: 8px 12px;
+            }
+
+            .btn-finalizar {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .acciones {
+                flex-direction: column;
+            }
+
+            .acciones .btn-reset {
+                width: 100%;
+                text-align: center;
             }
         }
 
@@ -380,15 +467,23 @@
 
                 <div class="status loading" id="statusIndicator">🔄 Conectando con el servidor...</div>
 
-                <div class="giro" id="giro">
-                    <strong>💡 El giro:</strong><br>
-                    "Miren... la mayoría dijo <strong>'no' o 'depende'</strong>. O sea, instintivamente, <strong>no confiamos en un desconocido con nuestra información personal</strong>. Tiene sentido, ¿no?"<br><br>
-                    "Pero... <strong>¿por qué entonces compartimos TANTA información personal en redes sociales</strong>, donde perfectos desconocidos pueden verla, guardarla y reenviarla sin nuestro permiso?"<br>
-                    <span class="final">🔥 "Esa contradicción es el punto de partida de lo que vamos a ver hoy. Se llama <strong>Identidad Digital</strong>."</span>
+                <!-- ===== BOTONES DE ACCIÓN ===== -->
+                <div class="acciones">
+                    <button class="btn-finalizar" id="finalizarBtn">📢 Finalizar encuesta</button>
+                    <button class="btn-reset" id="resetBtn">🔄 Reiniciar votos</button>
                 </div>
-            </div>
 
-            <button class="btn-reset" id="resetBtn">🔄 Reiniciar votos</button>
+                <!-- ===== GIRO (oculto hasta finalizar) ===== -->
+                <div class="giro-wrapper" id="giroWrapper">
+                    <div class="giro">
+                        <strong>💡 El giro:</strong><br>
+                        "Miren... la mayoría dijo <strong>'no' o 'depende'</strong>. O sea, instintivamente, <strong>no confiamos en un desconocido con nuestra información personal</strong>. Tiene sentido, ¿no?"<br><br>
+                        "Pero... <strong>¿por qué entonces compartimos TANTA información personal en redes sociales</strong>, donde perfectos desconocidos pueden verla, guardarla y reenviarla sin nuestro permiso?"<br>
+                        <span class="final">🔥 "Esa contradicción es el punto de partida de lo que vamos a ver hoy. Se llama <strong>Identidad Digital</strong>."</span>
+                    </div>
+                </div>
+
+            </div>
 
             <p class="footnote" style="color:rgba(255,255,255,0.12);font-size:0.65rem;margin-top:8px;">
                 💡 Los votos se guardan en la nube. Actualizaciones en tiempo real.
@@ -407,8 +502,6 @@
             // ===== CONFIGURACIÓN DE SUPABASE =====
             // =============================================================
 
-            // Estas variables se reemplazan automáticamente en Vercel
-            // Si estás en local, poné tus credenciales acá
             const SUPABASE_URL = '{{SUPABASE_URL}}';
             const SUPABASE_ANON_KEY = '{{SUPABASE_ANON_KEY}}';
 
@@ -418,8 +511,9 @@
 
             let supabase = null;
             let channel = null;
-            let myVote = null; // Guarda la opción que votó este usuario
+            let myVote = null;
             let isSubscribed = false;
+            let encuestaFinalizada = false;
 
             // Elementos
             const statusIndicator = document.getElementById('statusIndicator');
@@ -430,15 +524,15 @@
             const countDepende = document.getElementById('countDepende');
             const countNo = document.getElementById('countNo');
             const totalCount = document.getElementById('totalCount');
-            const giro = document.getElementById('giro');
+            const giroWrapper = document.getElementById('giroWrapper');
             const resetBtn = document.getElementById('resetBtn');
+            const finalizarBtn = document.getElementById('finalizarBtn');
             const votarSi = document.getElementById('votarSi');
             const votarDepende = document.getElementById('votarDepende');
             const votarNo = document.getElementById('votarNo');
 
-            let totalVotos = 0;
             let resultados = { si: 0, depende: 0, no: 0 };
-            let barsAnimated = false;
+            let totalVotos = 0;
 
             // =============================================================
             // ===== CONECTAR A SUPABASE =====
@@ -470,7 +564,7 @@
             }
 
             // =============================================================
-            // ===== OBTENER VOTOS INICIALES =====
+            // ===== OBTENER VOTOS =====
             // =============================================================
 
             async function cargarVotos() {
@@ -483,7 +577,6 @@
 
                     if (error) throw error;
 
-                    // Contar votos
                     const conteo = { si: 0, depende: 0, no: 0 };
                     data.forEach(v => {
                         if (conteo[v.opcion] !== undefined) conteo[v.opcion]++;
@@ -507,38 +600,23 @@
             function actualizarUI(conteo) {
                 const total = conteo.si + conteo.depende + conteo.no;
 
-                // Guardar resultados
                 resultados = conteo;
                 totalVotos = total;
 
-                // Actualizar números
                 countSi.textContent = conteo.si;
                 countDepende.textContent = conteo.depende;
                 countNo.textContent = conteo.no;
                 totalCount.textContent = total;
 
-                // Calcular porcentajes
                 const maxWidth = 100;
                 const pctSi = total > 0 ? (conteo.si / total) * maxWidth : 0;
                 const pctDepende = total > 0 ? (conteo.depende / total) * maxWidth : 0;
                 const pctNo = total > 0 ? (conteo.no / total) * maxWidth : 0;
 
-                // Animar barras
                 barSi.style.width = pctSi + '%';
                 barDepende.style.width = pctDepende + '%';
                 barNo.style.width = pctNo + '%';
 
-                // Mostrar giro si hay suficientes votos
-                if (total >= 5 && !barsAnimated) {
-                    barsAnimated = true;
-                    setTimeout(() => {
-                        giro.style.display = 'block';
-                        // Sonido de completado
-                        playCompleteSound();
-                    }, 800);
-                }
-
-                // Actualizar estado de los botones
                 actualizarBotones();
             }
 
@@ -550,17 +628,10 @@
                     const opcion = opciones[i];
                     if (myVote === opcion) {
                         btn.classList.add('voted');
-                        btn.textContent = btn.textContent.replace('Votar', '✓ Votaste');
                     } else {
                         btn.classList.remove('voted');
-                        // Restaurar texto original si es necesario
-                        const textos = {
-                            'si': '✅ Sí, sin problemas',
-                            'depende': '🤔 Depende',
-                            'no': '❌ No, ni loco/a'
-                        };
-                        btn.innerHTML = textos[opcion];
                     }
+                    btn.disabled = encuestaFinalizada;
                 });
             }
 
@@ -574,26 +645,20 @@
                     return;
                 }
 
-                if (myVote === opcion) {
-                    // Si ya votó esta opción, no hacer nada
+                if (encuestaFinalizada) {
+                    alert('📢 La encuesta ya finalizó. No se pueden registrar más votos.');
                     return;
                 }
 
-                // Si ya había votado otra opción, primero eliminamos ese voto
+                if (myVote === opcion) return;
+
                 if (myVote) {
                     try {
-                        // Buscar el voto del usuario (por IP o session)
-                        // En esta versión simplificada, eliminamos el voto anterior del usuario
-                        // usando un identificador de sesión (localStorage)
                         const sessionId = obtenerSessionId();
-
-                        const { error: deleteError } = await supabase
+                        await supabase
                             .from('votos')
                             .delete()
                             .eq('session_id', sessionId);
-
-                        if (deleteError) console.warn('No se pudo eliminar voto anterior:', deleteError);
-
                     } catch (e) {
                         console.warn('Error al eliminar voto anterior:', e);
                     }
@@ -601,8 +666,7 @@
 
                 try {
                     const sessionId = obtenerSessionId();
-
-                    const { data, error } = await supabase
+                    const { error } = await supabase
                         .from('votos')
                         .insert({ opcion: opcion, session_id: sessionId });
 
@@ -610,11 +674,7 @@
 
                     myVote = opcion;
                     actualizarBotones();
-
-                    // Reproducir sonido de click
                     playClickSound();
-
-                    // Recargar votos para actualizar UI
                     await cargarVotos();
 
                 } catch (error) {
@@ -624,7 +684,7 @@
             }
 
             // =============================================================
-            // ===== SESSION ID (para identificar votos únicos) =====
+            // ===== SESSION ID =====
             // =============================================================
 
             function obtenerSessionId() {
@@ -634,6 +694,34 @@
                     localStorage.setItem('votacion_session_id', id);
                 }
                 return id;
+            }
+
+            // =============================================================
+            // ===== FINALIZAR ENCUESTA =====
+            // =============================================================
+
+            function finalizarEncuesta() {
+                if (encuestaFinalizada) return;
+
+                encuestaFinalizada = true;
+
+                // Deshabilitar botones de voto
+                votarSi.disabled = true;
+                votarDepende.disabled = true;
+                votarNo.disabled = true;
+
+                // Cambiar texto del botón
+                finalizarBtn.textContent = '✅ Encuesta finalizada';
+                finalizarBtn.classList.add('finalizado');
+                finalizarBtn.disabled = true;
+
+                // Mostrar el giro con animación
+                giroWrapper.classList.add('visible');
+
+                // Sonido
+                playCompleteSound();
+
+                console.log('📢 Encuesta finalizada. Mostrando resultados y giro.');
             }
 
             // =============================================================
@@ -654,20 +742,31 @@
                     const { error } = await supabase
                         .from('votos')
                         .delete()
-                        .neq('id', 0); // Eliminar todos
+                        .neq('id', 0);
 
                     if (error) throw error;
 
                     myVote = null;
-                    barsAnimated = false;
-                    giro.style.display = 'none';
+                    encuestaFinalizada = false;
+
+                    // Ocultar giro
+                    giroWrapper.classList.remove('visible');
+
+                    // Restaurar botón finalizar
+                    finalizarBtn.textContent = '📢 Finalizar encuesta';
+                    finalizarBtn.classList.remove('finalizado');
+                    finalizarBtn.disabled = false;
+
+                    // Habilitar botones de voto
+                    votarSi.disabled = false;
+                    votarDepende.disabled = false;
+                    votarNo.disabled = false;
 
                     await cargarVotos();
 
                     resetBtn.textContent = '🔄 Reiniciar votos';
                     resetBtn.disabled = false;
 
-                    // Sonido de reset
                     playResetSound();
 
                 } catch (error) {
@@ -706,7 +805,6 @@
                                 statusIndicator.textContent = '✅ Conectado · Tiempo real activo';
                                 statusIndicator.className = 'status connected';
                             } else {
-                                console.warn('⚠️ Estado de suscripción:', status);
                                 statusIndicator.textContent = '⚠️ Reconectando...';
                                 statusIndicator.className = 'status loading';
                             }
@@ -755,9 +853,9 @@
             }
 
             function playCompleteSound() {
-                playTone(523, 0.12, 'sine', 0.1);
-                setTimeout(() => playTone(659, 0.12, 'sine', 0.1), 130);
-                setTimeout(() => playTone(784, 0.15, 'sine', 0.12), 260);
+                playTone(523, 0.12, 'sine', 0.12);
+                setTimeout(() => playTone(659, 0.12, 'sine', 0.12), 130);
+                setTimeout(() => playTone(784, 0.15, 'sine', 0.14), 260);
             }
 
             function playResetSound() {
@@ -770,33 +868,25 @@
             // =============================================================
 
             async function init() {
-                // Conectar a Supabase
                 const conectado = conectarSupabase();
 
                 if (conectado) {
-                    // Cargar votos iniciales
                     await cargarVotos();
-
-                    // Suscribirse a cambios en tiempo real
                     suscribirCambios();
                 } else {
-                    // Si no hay conexión, cargar datos de ejemplo para demostración
                     statusIndicator.textContent = '📱 Modo demostración (sin conexión)';
                     statusIndicator.className = 'status disconnected';
-
-                    // Datos de ejemplo
                     const demoData = { si: 12, depende: 38, no: 50 };
                     actualizarUI(demoData);
                 }
 
-                // Eventos de los botones de voto
+                // Eventos de voto
                 votarSi.addEventListener('click', function(e) {
                     e.preventDefault();
-                    if (supabase) {
+                    if (supabase && !encuestaFinalizada) {
                         votar('si');
-                    } else {
+                    } else if (!supabase) {
                         alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
-                        // Simular voto en modo demo
                         const demoData = { si: resultados.si + 1, depende: resultados.depende, no: resultados.no };
                         actualizarUI(demoData);
                     }
@@ -804,9 +894,9 @@
 
                 votarDepende.addEventListener('click', function(e) {
                     e.preventDefault();
-                    if (supabase) {
+                    if (supabase && !encuestaFinalizada) {
                         votar('depende');
-                    } else {
+                    } else if (!supabase) {
                         alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
                         const demoData = { si: resultados.si, depende: resultados.depende + 1, no: resultados.no };
                         actualizarUI(demoData);
@@ -815,16 +905,29 @@
 
                 votarNo.addEventListener('click', function(e) {
                     e.preventDefault();
-                    if (supabase) {
+                    if (supabase && !encuestaFinalizada) {
                         votar('no');
-                    } else {
+                    } else if (!supabase) {
                         alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
                         const demoData = { si: resultados.si, depende: resultados.depende, no: resultados.no + 1 };
                         actualizarUI(demoData);
                     }
                 });
 
-                // Evento de reset
+                // Finalizar encuesta
+                finalizarBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!encuestaFinalizada) {
+                        if (totalVotos === 0) {
+                            if (!confirm('⚠️ No hay votos registrados. ¿Finalizar encuesta de todas formas?')) {
+                                return;
+                            }
+                        }
+                        finalizarEncuesta();
+                    }
+                });
+
+                // Reset
                 resetBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     if (supabase) {
@@ -832,8 +935,14 @@
                     } else {
                         if (confirm('⚠️ Modo demostración. ¿Reiniciar votos de ejemplo?')) {
                             const demoData = { si: 0, depende: 0, no: 0 };
-                            barsAnimated = false;
-                            giro.style.display = 'none';
+                            encuestaFinalizada = false;
+                            giroWrapper.classList.remove('visible');
+                            finalizarBtn.textContent = '📢 Finalizar encuesta';
+                            finalizarBtn.classList.remove('finalizado');
+                            finalizarBtn.disabled = false;
+                            votarSi.disabled = false;
+                            votarDepende.disabled = false;
+                            votarNo.disabled = false;
                             actualizarUI(demoData);
                         }
                     }
@@ -842,7 +951,6 @@
                 console.log('🚀 Aplicación iniciada');
             }
 
-            // Ejecutar al cargar la página
             document.addEventListener('DOMContentLoaded', init);
 
         })();
