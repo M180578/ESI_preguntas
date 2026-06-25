@@ -1,0 +1,11 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de entorno (cuando agregues Supabase)
+.env
+.env.local
+.env.*.local
+
+# Dependencias (si usas Node.js en el futuro)
+node_modules/
