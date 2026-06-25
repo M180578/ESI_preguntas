@@ -108,13 +108,13 @@
             font-family: inherit;
         }
 
-        .box .opts button:hover {
+        .box .opts button:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.08);
             border-color: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
         }
 
-        .box .opts button:active {
+        .box .opts button:active:not(:disabled) {
             transform: scale(0.96);
         }
 
@@ -195,7 +195,7 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        /* ===== GIRO (oculto hasta finalizar encuesta) ===== */
+        /* ===== GIRO ===== */
         .giro-wrapper {
             display: none;
             margin-top: 14px;
@@ -246,7 +246,7 @@
             border: 1px solid rgba(255, 200, 0, 0.06);
         }
 
-        /* ===== BOTÓN FINALIZAR ENCUESTA ===== */
+        /* ===== BOTONES ===== */
         .btn-finalizar {
             background: linear-gradient(135deg, #ff6b6b, #ff3366);
             color: #fff;
@@ -262,13 +262,13 @@
             box-shadow: 0 4px 20px rgba(255, 50, 100, 0.15);
         }
 
-        .btn-finalizar:hover {
+        .btn-finalizar:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 35px rgba(255, 50, 100, 0.25);
         }
 
         .btn-finalizar:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
         }
@@ -296,7 +296,7 @@
             margin-top: 12px;
         }
 
-        .btn-reset:hover {
+        .btn-reset:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
         }
@@ -465,7 +465,7 @@
                     Total de votos: <strong id="totalCount">0</strong>
                 </div>
 
-                <div class="status loading" id="statusIndicator">🔄 Conectando con el servidor...</div>
+                <div class="status loading" id="statusIndicator">🔄 Conectando...</div>
 
                 <!-- ===== BOTONES DE ACCIÓN ===== -->
                 <div class="acciones">
@@ -502,6 +502,7 @@
             // ===== CONFIGURACIÓN DE SUPABASE =====
             // =============================================================
 
+            // Estas variables se reemplazan automáticamente en Vercel
             const SUPABASE_URL = '{{SUPABASE_URL}}';
             const SUPABASE_ANON_KEY = '{{SUPABASE_ANON_KEY}}';
 
@@ -542,6 +543,7 @@
                 const url = SUPABASE_URL;
                 const key = SUPABASE_ANON_KEY;
 
+                // Verificar si las variables están configuradas
                 if (!url || url === '{{SUPABASE_URL}}' || !key || key === '{{SUPABASE_ANON_KEY}}') {
                     statusIndicator.textContent = '⚠️ Configuración pendiente. Conectá con Supabase.';
                     statusIndicator.className = 'status disconnected';
@@ -705,20 +707,15 @@
 
                 encuestaFinalizada = true;
 
-                // Deshabilitar botones de voto
                 votarSi.disabled = true;
                 votarDepende.disabled = true;
                 votarNo.disabled = true;
 
-                // Cambiar texto del botón
                 finalizarBtn.textContent = '✅ Encuesta finalizada';
                 finalizarBtn.classList.add('finalizado');
                 finalizarBtn.disabled = true;
 
-                // Mostrar el giro con animación
                 giroWrapper.classList.add('visible');
-
-                // Sonido
                 playCompleteSound();
 
                 console.log('📢 Encuesta finalizada. Mostrando resultados y giro.');
@@ -729,7 +726,10 @@
             // =============================================================
 
             async function reiniciarVotos() {
-                if (!supabase) return;
+                if (!supabase) {
+                    alert('⚠️ No hay conexión con el servidor.');
+                    return;
+                }
 
                 if (!confirm('⚠️ ¿Seguro que querés eliminar todos los votos? Esta acción no se puede deshacer.')) {
                     return;
@@ -749,15 +749,12 @@
                     myVote = null;
                     encuestaFinalizada = false;
 
-                    // Ocultar giro
                     giroWrapper.classList.remove('visible');
 
-                    // Restaurar botón finalizar
                     finalizarBtn.textContent = '📢 Finalizar encuesta';
                     finalizarBtn.classList.remove('finalizado');
                     finalizarBtn.disabled = false;
 
-                    // Habilitar botones de voto
                     votarSi.disabled = false;
                     votarDepende.disabled = false;
                     votarNo.disabled = false;
