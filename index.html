@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Identidad Digital Segura · Actividad + Pitch</title>
+    <title>Identidad Digital Segura · Votación en Vivo</title>
+
+    <!-- ===== SUPABASE CLIENT ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         /* ===== RESET Y BASE ===== */
         * {
@@ -31,87 +35,6 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.04);
             position: relative;
-        }
-
-        /* ===== TABS ===== */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .tab {
-            padding: 7px 18px;
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            border-radius: 100px;
-            background: transparent;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-            text-align: center;
-        }
-
-        .tab:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .tab.active {
-            border-color: #00c8ff;
-            background: rgba(0, 200, 255, 0.08);
-            color: #fff;
-        }
-
-        .tab .icon {
-            margin-right: 5px;
-        }
-
-        /* ===== BADGE ===== */
-        .badge {
-            display: inline-block;
-            font-size: 0.55rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding: 3px 14px;
-            border-radius: 100px;
-            margin-bottom: 12px;
-        }
-
-        .badge.activity {
-            background: rgba(255, 200, 0, 0.1);
-            color: #ffd866;
-            border: 1px solid rgba(255, 200, 0, 0.1);
-        }
-
-        .badge.pitch {
-            background: rgba(0, 200, 255, 0.1);
-            color: #6dd5ff;
-            border: 1px solid rgba(0, 200, 255, 0.1);
-        }
-
-        /* ===== PASOS ===== */
-        .step {
-            display: none;
-            animation: fade 0.4s ease forwards;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        @keyframes fade {
-            0% {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .step-icon {
@@ -150,73 +73,6 @@
             margin-bottom: 8px;
         }
 
-        .step p strong {
-            color: #fff;
-        }
-
-        .step .stat {
-            display: inline-block;
-            background: rgba(255, 200, 0, 0.08);
-            color: #ffd866;
-            font-weight: 700;
-            padding: 2px 14px;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            border: 1px solid rgba(255, 200, 0, 0.08);
-            margin-right: 4px;
-        }
-
-        /* ===== LISTA ===== */
-        .list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px 16px;
-            margin: 10px 0 8px;
-            list-style: none;
-        }
-
-        .list li {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.88rem;
-            padding-left: 20px;
-            position: relative;
-            line-height: 1.4;
-        }
-
-        .list li::before {
-            content: '✦';
-            position: absolute;
-            left: 0;
-            color: #00c8ff;
-            font-size: 0.7rem;
-        }
-
-        /* ===== CONTADOR ===== */
-        .counter {
-            display: inline-flex;
-            align-items: center;
-            gap: 14px;
-            background: rgba(255, 50, 50, 0.06);
-            border: 1px solid rgba(255, 50, 50, 0.1);
-            border-radius: 14px;
-            padding: 6px 18px;
-            margin: 6px 0 10px;
-        }
-
-        .counter .num {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #ff6b6b;
-            min-width: 55px;
-            text-align: center;
-        }
-
-        .counter .label {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
-            line-height: 1.3;
-        }
-
         /* ===== ACTIVIDAD ===== */
         .box {
             background: rgba(255, 200, 0, 0.03);
@@ -240,23 +96,44 @@
             margin-bottom: 14px;
         }
 
-        .box .opts span {
+        .box .opts button {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 100px;
-            padding: 4px 16px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.82rem;
+            padding: 8px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
 
-        .box .opts span .emoji {
+        .box .opts button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .box .opts button:active {
+            transform: scale(0.96);
+        }
+
+        .box .opts button .emoji {
             margin-right: 6px;
+        }
+
+        .box .opts button.voted {
+            background: rgba(0, 200, 255, 0.15);
+            border-color: #00c8ff;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.1);
         }
 
         .bars {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            margin-top: 10px;
         }
 
         .bars .item {
@@ -267,14 +144,19 @@
         .bars .item .top {
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 2px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 3px;
+        }
+
+        .bars .item .top .count {
+            color: #fff;
+            font-weight: 600;
         }
 
         .bars .item .track {
-            height: 5px;
-            background: rgba(255, 255, 255, 0.05);
+            height: 8px;
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 100px;
             overflow: hidden;
         }
@@ -283,7 +165,7 @@
             height: 100%;
             border-radius: 100px;
             width: 0%;
-            transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .fill.si {
@@ -294,6 +176,17 @@
         }
         .fill.no {
             background: linear-gradient(90deg, #ff6b6b, #ff3366);
+        }
+
+        .total-votes {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+
+        .total-votes strong {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .giro {
@@ -327,120 +220,17 @@
             border: 1px solid rgba(255, 200, 0, 0.06);
         }
 
-        .footnote {
-            color: rgba(255, 255, 255, 0.12);
-            font-size: 0.65rem;
-            margin-top: 4px;
-        }
-
-        /* ===== PROGRESO ===== */
-        .dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin: 20px 0 14px;
-        }
-
-        .dots .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            transition: all 0.4s ease;
-            cursor: pointer;
-            border: none;
-        }
-
-        .dots .dot.active {
-            background: linear-gradient(135deg, #00c8ff, #7b61ff);
-            width: 28px;
-            border-radius: 20px;
-        }
-
-        .dots .dot.hidden {
-            display: none;
-        }
-
-        /* ===== BOTONES ===== */
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 9px 22px;
-            border: none;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-prev {
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-prev:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
-
-        .btn-prev:disabled {
-            opacity: 0.2;
-            cursor: not-allowed;
-        }
-
-        .btn-next {
-            background: linear-gradient(135deg, #00c8ff, #7b61ff);
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(0, 200, 255, 0.12);
-        }
-
-        .btn-next:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 200, 255, 0.2);
-        }
-
-        .btn-cta {
-            background: linear-gradient(135deg, #ff6b6b, #ff3366);
-            color: #fff;
-            font-size: 0.9rem;
-            padding: 9px 28px;
-            box-shadow: 0 4px 16px rgba(255, 50, 100, 0.12);
-            display: none;
-        }
-
-        .btn-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 50, 100, 0.2);
-        }
-
-        .btn-start {
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            color: #1a1a2e;
-            font-size: 0.9rem;
-            padding: 9px 28px;
-            box-shadow: 0 4px 16px rgba(255, 200, 0, 0.12);
-            display: none;
-        }
-
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 200, 0, 0.18);
-        }
-
         .btn-reset {
             background: rgba(255, 255, 255, 0.04);
             color: rgba(255, 255, 255, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+            padding: 6px 16px;
             font-size: 0.7rem;
-            padding: 6px 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin-top: 12px;
         }
 
         .btn-reset:hover {
@@ -448,21 +238,9 @@
             color: #fff;
         }
 
-        .nav-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-            padding-top: 12px;
-        }
-
-        .nav-bottom .left {
-            display: flex;
-            gap: 8px;
-            align-items: center;
+        .btn-reset:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .footer {
@@ -471,6 +249,22 @@
             font-size: 0.45rem;
             letter-spacing: 1.5px;
             margin-top: 16px;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 6px;
+        }
+
+        .status.connected {
+            color: #4ade80;
+        }
+        .status.disconnected {
+            color: #f87171;
+        }
+        .status.loading {
+            color: #fbbf24;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -488,66 +282,16 @@
                 font-size: 0.88rem;
             }
 
-            .list {
-                grid-template-columns: 1fr;
-                gap: 2px;
-            }
-
-            .list li {
+            .box .opts button {
+                padding: 6px 14px;
                 font-size: 0.8rem;
-            }
-
-            .btn {
-                padding: 7px 14px;
-                font-size: 0.72rem;
-            }
-
-            .btn-cta,
-            .btn-start {
-                padding: 8px 16px;
-                font-size: 0.8rem;
-                width: 100%;
-                justify-content: center;
-            }
-
-            .nav {
-                flex-direction: column;
-            }
-
-            .nav .btn-prev {
-                order: 2;
-            }
-
-            .nav-bottom {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .nav-bottom .left {
-                justify-content: center;
-            }
-
-            .counter .num {
-                font-size: 1.6rem;
-                min-width: 40px;
-            }
-
-            .tab {
-                font-size: 0.65rem;
-                padding: 6px 10px;
-            }
-
-            .box {
-                padding: 12px 12px;
+                flex: 1;
+                min-width: 80px;
+                text-align: center;
             }
 
             .box .q {
                 font-size: 0.92rem;
-            }
-
-            .box .opts span {
-                font-size: 0.72rem;
-                padding: 3px 12px;
             }
 
             .giro {
@@ -569,11 +313,6 @@
             .step h2 {
                 font-size: 1rem;
             }
-
-            .tab {
-                font-size: 0.55rem;
-                padding: 4px 6px;
-            }
         }
     </style>
 </head>
@@ -581,153 +320,79 @@
 
     <div class="card">
 
-        <!-- ===== TABS ===== -->
-        <div class="tabs">
-            <button class="tab active" data-mode="activity" id="tabActivity">
-                <span class="icon">📱</span> Actividad
-            </button>
-            <button class="tab" data-mode="pitch" id="tabPitch">
-                <span class="icon">🎤</span> Pitch
-            </button>
-        </div>
+        <!-- ===== CONTENIDO ===== -->
+        <div class="step" style="display:block;">
+            <span class="step-icon">📸</span>
+            <div class="step-label">🎯 Gancho · Votación en vivo</div>
+            <h2>El <span class="highlight">experimento de la foto</span></h2>
+            <p style="color: rgba(255,255,255,0.35); font-size: 0.82rem;">
+                No requiere conocimiento previo · Genera intriga · Participación anónima
+            </p>
 
-        <!-- ===== BADGE ===== -->
-        <div class="badge activity" id="badge">📱 Modo: Actividad para estudiantes</div>
+            <div class="box">
+                <div class="q">📱 ¿Le darías tu celular a un desconocido para que saque una foto o vea información privada y la suba a sus redes?</div>
 
-        <!-- ===== PASOS ===== -->
-        <div id="stepsContainer">
+                <div class="opts" id="optionsContainer">
+                    <button data-opcion="si" id="votarSi">
+                        <span class="emoji">✅</span> Sí, sin problemas
+                    </button>
+                    <button data-opcion="depende" id="votarDepende">
+                        <span class="emoji">🤔</span> Depende
+                    </button>
+                    <button data-opcion="no" id="votarNo">
+                        <span class="emoji">❌</span> No, ni loco/a
+                    </button>
+                </div>
 
-            <!-- ========================================================== -->
-            <!-- ACTIVIDAD (1 paso) -->
-            <!-- ========================================================== -->
-            <div class="step active" data-mode="activity" data-step="0">
-                <span class="step-icon">📸</span>
-                <div class="step-label">🎯 Gancho · 2-3 min</div>
-                <h2>El <span class="highlight">experimento de la foto</span></h2>
-                <p style="color: rgba(255,255,255,0.35); font-size: 0.82rem;">
-                    No requiere conocimiento previo · Genera intriga · Participación anónima
-                </p>
-
-                <div class="box">
-                    <div class="q">📱 ¿Le darías tu celular a un desconocido para que saque una foto o vea información privada y la suba a sus redes?</div>
-                    <div class="opts">
-                        <span><span class="emoji">✅</span> Sí, sin problemas</span>
-                        <span><span class="emoji">🤔</span> Depende</span>
-                        <span><span class="emoji">❌</span> No, ni loco/a</span>
-                    </div>
-
-                    <div class="bars" id="bars">
-                        <div class="item">
-                            <div class="top"><span>✅ Sí</span> <span id="pctSi">0%</span></div>
-                            <div class="track"><div class="fill si" id="barSi" style="width:0%;"></div></div>
+                <div class="bars" id="barsContainer">
+                    <div class="item">
+                        <div class="top">
+                            <span>✅ Sí</span>
+                            <span class="count" id="countSi">0</span>
                         </div>
-                        <div class="item">
-                            <div class="top"><span>🤔 Depende</span> <span id="pctDepende">0%</span></div>
-                            <div class="track"><div class="fill depende" id="barDepende" style="width:0%;"></div></div>
-                        </div>
-                        <div class="item">
-                            <div class="top"><span>❌ No</span> <span id="pctNo">0%</span></div>
-                            <div class="track"><div class="fill no" id="barNo" style="width:0%;"></div></div>
+                        <div class="track">
+                            <div class="fill si" id="barSi" style="width:0%;"></div>
                         </div>
                     </div>
-
-                    <div class="giro" id="giro">
-                        <strong>💡 El giro:</strong><br>
-                        "Miren... la mayoría dijo <strong>'no' o 'depende'</strong>. O sea, instintivamente, <strong>no confiamos en un desconocido con nuestra información personal</strong>. Tiene sentido, ¿no?"<br><br>
-                        "Pero... <strong>¿por qué entonces compartimos TANTA información personal en redes sociales</strong>, donde perfectos desconocidos pueden verla, guardarla y reenviarla sin nuestro permiso?"<br>
-                        <span class="final">🔥 "Esa contradicción es el punto de partida de lo que vamos a ver hoy. Se llama <strong>Identidad Digital</strong>."</span>
+                    <div class="item">
+                        <div class="top">
+                            <span>🤔 Depende</span>
+                            <span class="count" id="countDepende">0</span>
+                        </div>
+                        <div class="track">
+                            <div class="fill depende" id="barDepende" style="width:0%;"></div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="top">
+                            <span>❌ No</span>
+                            <span class="count" id="countNo">0</span>
+                        </div>
+                        <div class="track">
+                            <div class="fill no" id="barNo" style="width:0%;"></div>
+                        </div>
                     </div>
                 </div>
 
-                <p class="footnote">💡 En clase real, usá Mentimeter o Slido para votación en vivo con celulares.</p>
-            </div>
-
-            <!-- ========================================================== -->
-            <!-- PITCH (4 pasos) -->
-            <!-- ========================================================== -->
-            <div class="step" data-mode="pitch" data-step="0" style="display:none;">
-                <span class="step-icon">📱</span>
-                <div class="step-label">Paso 1 · El gancho</div>
-                <h2>¿Cuántos de ustedes han visto una foto o información privada de un adolescente circular sin consentimiento?</h2>
-                <p style="color: rgba(255,255,255,0.3); font-style: italic; font-size: 0.9rem;">(Pausa. El silencio habla.)</p>
-                <p style="margin-top: 6px;">Esto <strong>ya está pasando</strong>. En nuestras escuelas. Con nuestros estudiantes. Y no sabemos cómo abordarlo.</p>
-            </div>
-
-            <div class="step" data-mode="pitch" data-step="1" style="display:none;">
-                <span class="step-icon">⚠️</span>
-                <div class="step-label">Paso 2 · El problema</div>
-                <h2>Los chicos pasan horas en redes, pero <span class="highlight">nadie les enseñó a protegerse</span>.</h2>
-                <p>El resultado: chicos expuestos, fotos compartidas sin permiso, violencia digital que reproduce desigualdades.</p>
-                <div class="counter">
-                    <span class="num" id="counterNum">0</span>
-                    <span class="label"><strong>aumento del grooming</strong><br>en el último año en Argentina</span>
+                <div class="total-votes" id="totalVotes">
+                    Total de votos: <strong id="totalCount">0</strong>
                 </div>
-                <p>
-                    <span class="stat">📊 38%</span> de las mujeres han experimentado violencia en línea.<br>
-                    <span class="stat">📊 1 de cada 4</span> estudiantes sufre ciberbullying.
-                </p>
+
+                <div class="status loading" id="statusIndicator">🔄 Conectando con el servidor...</div>
+
+                <div class="giro" id="giro">
+                    <strong>💡 El giro:</strong><br>
+                    "Miren... la mayoría dijo <strong>'no' o 'depende'</strong>. O sea, instintivamente, <strong>no confiamos en un desconocido con nuestra información personal</strong>. Tiene sentido, ¿no?"<br><br>
+                    "Pero... <strong>¿por qué entonces compartimos TANTA información personal en redes sociales</strong>, donde perfectos desconocidos pueden verla, guardarla y reenviarla sin nuestro permiso?"<br>
+                    <span class="final">🔥 "Esa contradicción es el punto de partida de lo que vamos a ver hoy. Se llama <strong>Identidad Digital</strong>."</span>
+                </div>
             </div>
 
-            <div class="step" data-mode="pitch" data-step="2" style="display:none;">
-                <span class="step-icon">🛡️</span>
-                <div class="step-label">Paso 3 · La solución</div>
-                <h2>Diseñamos <span class="highlight">"Identidad Digital Segura"</span></h2>
-                <p><strong>3 clases</strong> donde los estudiantes construyen herramientas para cuidarse y cuidar a otros.</p>
-                <ul class="list">
-                    <li>Analizan casos reales</li>
-                    <li>Debaten dilemas éticos</li>
-                    <li>Diseñan guías de supervivencia</li>
-                    <li>Integran perspectiva de género</li>
-                </ul>
-                <p style="font-size:0.82rem; color:rgba(255,255,255,0.3);">✦ No es una charla moralista. Ellos construyen las respuestas.</p>
-            </div>
+            <button class="btn-reset" id="resetBtn">🔄 Reiniciar votos</button>
 
-            <div class="step" data-mode="pitch" data-step="3" style="display:none;">
-                <span class="step-icon">🚀</span>
-                <div class="step-label">Paso 4 · Lo que logramos</div>
-                <h2>Chicos que saben <span class="highlight">qué hacer, a quién recurrir y cómo cuidar a otros</span>.</h2>
-                <ul class="list">
-                    <li>Configuran su privacidad en redes</li>
-                    <li>Identifican grooming, ciberbullying y violencia digital</li>
-                    <li>Conocen líneas de ayuda: <strong>102 · 137 · 0800-222-1717</strong></li>
-                    <li>Entienden que su identidad digital no es solo lo que publican</li>
-                </ul>
-                <p style="margin-top:6px; color:rgba(255,255,255,0.35); font-size:0.82rem;">
-                    ✅ Fundamentado en la <strong>Ley ESI 26.150</strong> y la <strong>Ley de Protección Integral</strong>.
-                </p>
-            </div>
-
-        </div>
-
-        <!-- ===== PROGRESO ===== -->
-        <div class="dots" id="dots">
-            <button class="dot active" data-index="0"></button>
-            <button class="dot" data-index="1"></button>
-            <button class="dot" data-index="2"></button>
-            <button class="dot" data-index="3"></button>
-        </div>
-
-        <!-- ===== BOTONES PRINCIPALES ===== -->
-        <div class="nav">
-            <button class="btn btn-prev" id="prevBtn" disabled>← Anterior</button>
-
-            <button class="btn btn-next" id="nextBtn">Siguiente →</button>
-
-            <button class="btn btn-cta" id="ctaPitch">🔥 Implementemos este taller</button>
-
-            <button class="btn btn-start" id="ctaActivity">🚀 ¡Empezar la clase!</button>
-        </div>
-
-        <!-- ===== BOTÓN RESET + INFO ===== -->
-        <div class="nav-bottom">
-            <div class="left">
-                <button class="btn btn-reset" id="resetBtn">🔄 Reiniciar</button>
-                <span style="color:rgba(255,255,255,0.1);font-size:0.6rem;">|</span>
-                <span style="color:rgba(255,255,255,0.08);font-size:0.55rem;">🔊 Sonidos activados</span>
-            </div>
-            <span style="color:rgba(255,255,255,0.04);font-size:0.55rem;">
-                ⬅ ➡ · Espacio
-            </span>
+            <p class="footnote" style="color:rgba(255,255,255,0.12);font-size:0.65rem;margin-top:8px;">
+                💡 Los votos se guardan en la nube. Actualizaciones en tiempo real.
+            </p>
         </div>
 
         <div class="footer">IDENTIDAD DIGITAL SEGURA · Cuidados, Derechos y Responsabilidades</div>
@@ -739,8 +404,323 @@
             'use strict';
 
             // =============================================================
-            // ===== SONIDOS (Web Audio API) =====
+            // ===== CONFIGURACIÓN DE SUPABASE =====
             // =============================================================
+
+            // Estas variables se reemplazan automáticamente en Vercel
+            // Si estás en local, poné tus credenciales acá
+            const SUPABASE_URL = '{{SUPABASE_URL}}';
+            const SUPABASE_ANON_KEY = '{{SUPABASE_ANON_KEY}}';
+
+            // =============================================================
+            // ===== INICIALIZAR SUPABASE =====
+            // =============================================================
+
+            let supabase = null;
+            let channel = null;
+            let myVote = null; // Guarda la opción que votó este usuario
+            let isSubscribed = false;
+
+            // Elementos
+            const statusIndicator = document.getElementById('statusIndicator');
+            const barSi = document.getElementById('barSi');
+            const barDepende = document.getElementById('barDepende');
+            const barNo = document.getElementById('barNo');
+            const countSi = document.getElementById('countSi');
+            const countDepende = document.getElementById('countDepende');
+            const countNo = document.getElementById('countNo');
+            const totalCount = document.getElementById('totalCount');
+            const giro = document.getElementById('giro');
+            const resetBtn = document.getElementById('resetBtn');
+            const votarSi = document.getElementById('votarSi');
+            const votarDepende = document.getElementById('votarDepende');
+            const votarNo = document.getElementById('votarNo');
+
+            let totalVotos = 0;
+            let resultados = { si: 0, depende: 0, no: 0 };
+            let barsAnimated = false;
+
+            // =============================================================
+            // ===== CONECTAR A SUPABASE =====
+            // =============================================================
+
+            function conectarSupabase() {
+                const url = SUPABASE_URL;
+                const key = SUPABASE_ANON_KEY;
+
+                if (!url || url === '{{SUPABASE_URL}}' || !key || key === '{{SUPABASE_ANON_KEY}}') {
+                    statusIndicator.textContent = '⚠️ Configuración pendiente. Conectá con Supabase.';
+                    statusIndicator.className = 'status disconnected';
+                    console.warn('⚠️ Variables de entorno de Supabase no configuradas.');
+                    return false;
+                }
+
+                try {
+                    supabase = window.supabase.createClient(url, key);
+                    statusIndicator.textContent = '✅ Conectado a Supabase';
+                    statusIndicator.className = 'status connected';
+                    console.log('✅ Conectado a Supabase');
+                    return true;
+                } catch (error) {
+                    statusIndicator.textContent = '❌ Error de conexión: ' + error.message;
+                    statusIndicator.className = 'status disconnected';
+                    console.error('❌ Error al conectar:', error);
+                    return false;
+                }
+            }
+
+            // =============================================================
+            // ===== OBTENER VOTOS INICIALES =====
+            // =============================================================
+
+            async function cargarVotos() {
+                if (!supabase) return;
+
+                try {
+                    const { data, error } = await supabase
+                        .from('votos')
+                        .select('opcion');
+
+                    if (error) throw error;
+
+                    // Contar votos
+                    const conteo = { si: 0, depende: 0, no: 0 };
+                    data.forEach(v => {
+                        if (conteo[v.opcion] !== undefined) conteo[v.opcion]++;
+                    });
+
+                    actualizarUI(conteo);
+                    return conteo;
+
+                } catch (error) {
+                    console.error('❌ Error al cargar votos:', error);
+                    statusIndicator.textContent = '❌ Error al cargar votos';
+                    statusIndicator.className = 'status disconnected';
+                    return null;
+                }
+            }
+
+            // =============================================================
+            // ===== ACTUALIZAR UI =====
+            // =============================================================
+
+            function actualizarUI(conteo) {
+                const total = conteo.si + conteo.depende + conteo.no;
+
+                // Guardar resultados
+                resultados = conteo;
+                totalVotos = total;
+
+                // Actualizar números
+                countSi.textContent = conteo.si;
+                countDepende.textContent = conteo.depende;
+                countNo.textContent = conteo.no;
+                totalCount.textContent = total;
+
+                // Calcular porcentajes
+                const maxWidth = 100;
+                const pctSi = total > 0 ? (conteo.si / total) * maxWidth : 0;
+                const pctDepende = total > 0 ? (conteo.depende / total) * maxWidth : 0;
+                const pctNo = total > 0 ? (conteo.no / total) * maxWidth : 0;
+
+                // Animar barras
+                barSi.style.width = pctSi + '%';
+                barDepende.style.width = pctDepende + '%';
+                barNo.style.width = pctNo + '%';
+
+                // Mostrar giro si hay suficientes votos
+                if (total >= 5 && !barsAnimated) {
+                    barsAnimated = true;
+                    setTimeout(() => {
+                        giro.style.display = 'block';
+                        // Sonido de completado
+                        playCompleteSound();
+                    }, 800);
+                }
+
+                // Actualizar estado de los botones
+                actualizarBotones();
+            }
+
+            function actualizarBotones() {
+                const buttons = [votarSi, votarDepende, votarNo];
+                const opciones = ['si', 'depende', 'no'];
+
+                buttons.forEach((btn, i) => {
+                    const opcion = opciones[i];
+                    if (myVote === opcion) {
+                        btn.classList.add('voted');
+                        btn.textContent = btn.textContent.replace('Votar', '✓ Votaste');
+                    } else {
+                        btn.classList.remove('voted');
+                        // Restaurar texto original si es necesario
+                        const textos = {
+                            'si': '✅ Sí, sin problemas',
+                            'depende': '🤔 Depende',
+                            'no': '❌ No, ni loco/a'
+                        };
+                        btn.innerHTML = textos[opcion];
+                    }
+                });
+            }
+
+            // =============================================================
+            // ===== VOTAR =====
+            // =============================================================
+
+            async function votar(opcion) {
+                if (!supabase) {
+                    alert('⚠️ No hay conexión con el servidor. Intentá de nuevo.');
+                    return;
+                }
+
+                if (myVote === opcion) {
+                    // Si ya votó esta opción, no hacer nada
+                    return;
+                }
+
+                // Si ya había votado otra opción, primero eliminamos ese voto
+                if (myVote) {
+                    try {
+                        // Buscar el voto del usuario (por IP o session)
+                        // En esta versión simplificada, eliminamos el voto anterior del usuario
+                        // usando un identificador de sesión (localStorage)
+                        const sessionId = obtenerSessionId();
+
+                        const { error: deleteError } = await supabase
+                            .from('votos')
+                            .delete()
+                            .eq('session_id', sessionId);
+
+                        if (deleteError) console.warn('No se pudo eliminar voto anterior:', deleteError);
+
+                    } catch (e) {
+                        console.warn('Error al eliminar voto anterior:', e);
+                    }
+                }
+
+                try {
+                    const sessionId = obtenerSessionId();
+
+                    const { data, error } = await supabase
+                        .from('votos')
+                        .insert({ opcion: opcion, session_id: sessionId });
+
+                    if (error) throw error;
+
+                    myVote = opcion;
+                    actualizarBotones();
+
+                    // Reproducir sonido de click
+                    playClickSound();
+
+                    // Recargar votos para actualizar UI
+                    await cargarVotos();
+
+                } catch (error) {
+                    console.error('❌ Error al votar:', error);
+                    alert('❌ Error al registrar tu voto. Intentá de nuevo.');
+                }
+            }
+
+            // =============================================================
+            // ===== SESSION ID (para identificar votos únicos) =====
+            // =============================================================
+
+            function obtenerSessionId() {
+                let id = localStorage.getItem('votacion_session_id');
+                if (!id) {
+                    id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                    localStorage.setItem('votacion_session_id', id);
+                }
+                return id;
+            }
+
+            // =============================================================
+            // ===== REINICIAR VOTOS =====
+            // =============================================================
+
+            async function reiniciarVotos() {
+                if (!supabase) return;
+
+                if (!confirm('⚠️ ¿Seguro que querés eliminar todos los votos? Esta acción no se puede deshacer.')) {
+                    return;
+                }
+
+                try {
+                    resetBtn.disabled = true;
+                    resetBtn.textContent = '⏳ Eliminando...';
+
+                    const { error } = await supabase
+                        .from('votos')
+                        .delete()
+                        .neq('id', 0); // Eliminar todos
+
+                    if (error) throw error;
+
+                    myVote = null;
+                    barsAnimated = false;
+                    giro.style.display = 'none';
+
+                    await cargarVotos();
+
+                    resetBtn.textContent = '🔄 Reiniciar votos';
+                    resetBtn.disabled = false;
+
+                    // Sonido de reset
+                    playResetSound();
+
+                } catch (error) {
+                    console.error('❌ Error al reiniciar:', error);
+                    alert('❌ Error al reiniciar los votos.');
+                    resetBtn.textContent = '🔄 Reiniciar votos';
+                    resetBtn.disabled = false;
+                }
+            }
+
+            // =============================================================
+            // ===== SUSCRIPCIÓN EN TIEMPO REAL =====
+            // =============================================================
+
+            function suscribirCambios() {
+                if (!supabase || isSubscribed) return;
+
+                try {
+                    channel = supabase
+                        .channel('tabla-votos')
+                        .on(
+                            'postgres_changes', {
+                                event: '*',
+                                schema: 'public',
+                                table: 'votos'
+                            },
+                            (payload) => {
+                                console.log('🔄 Cambio detectado:', payload);
+                                cargarVotos();
+                            }
+                        )
+                        .subscribe((status) => {
+                            if (status === 'SUBSCRIBED') {
+                                isSubscribed = true;
+                                console.log('✅ Suscrito a cambios en tiempo real');
+                                statusIndicator.textContent = '✅ Conectado · Tiempo real activo';
+                                statusIndicator.className = 'status connected';
+                            } else {
+                                console.warn('⚠️ Estado de suscripción:', status);
+                                statusIndicator.textContent = '⚠️ Reconectando...';
+                                statusIndicator.className = 'status loading';
+                            }
+                        });
+
+                } catch (error) {
+                    console.error('❌ Error al suscribir:', error);
+                }
+            }
+
+            // =============================================================
+            // ===== SONIDOS =====
+            // =============================================================
+
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             let audioCtx = null;
 
@@ -761,213 +741,112 @@
                     const gain = ctx.createGain();
                     osc.type = type || 'sine';
                     osc.frequency.value = freq || 440;
-                    gain.gain.setValueAtTime((volume || 0.15), ctx.currentTime);
+                    gain.gain.setValueAtTime((volume || 0.1), ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (duration || 0.15));
                     osc.connect(gain);
                     gain.connect(ctx.destination);
                     osc.start(ctx.currentTime);
                     osc.stop(ctx.currentTime + (duration || 0.15));
-                } catch (e) {
-                    // Silencio si falla el audio
+                } catch (e) { /* Silencio */ }
+            }
+
+            function playClickSound() {
+                playTone(600, 0.08, 'sine', 0.1);
+            }
+
+            function playCompleteSound() {
+                playTone(523, 0.12, 'sine', 0.1);
+                setTimeout(() => playTone(659, 0.12, 'sine', 0.1), 130);
+                setTimeout(() => playTone(784, 0.15, 'sine', 0.12), 260);
+            }
+
+            function playResetSound() {
+                playTone(300, 0.15, 'sawtooth', 0.05);
+                setTimeout(() => playTone(200, 0.2, 'sawtooth', 0.04), 150);
+            }
+
+            // =============================================================
+            // ===== INICIALIZAR =====
+            // =============================================================
+
+            async function init() {
+                // Conectar a Supabase
+                const conectado = conectarSupabase();
+
+                if (conectado) {
+                    // Cargar votos iniciales
+                    await cargarVotos();
+
+                    // Suscribirse a cambios en tiempo real
+                    suscribirCambios();
+                } else {
+                    // Si no hay conexión, cargar datos de ejemplo para demostración
+                    statusIndicator.textContent = '📱 Modo demostración (sin conexión)';
+                    statusIndicator.className = 'status disconnected';
+
+                    // Datos de ejemplo
+                    const demoData = { si: 12, depende: 38, no: 50 };
+                    actualizarUI(demoData);
                 }
-            }
 
-            function soundClick() {
-                playTone(600, 0.08, 'sine', 0.12);
-            }
-
-            function soundStep() {
-                playTone(440, 0.1, 'sine', 0.1);
-                setTimeout(function() { playTone(550, 0.08, 'sine', 0.08); }, 80);
-            }
-
-            function soundComplete() {
-                playTone(523, 0.12, 'sine', 0.12);
-                setTimeout(function() { playTone(659, 0.12, 'sine', 0.12); }, 130);
-                setTimeout(function() { playTone(784, 0.15, 'sine', 0.14); }, 260);
-            }
-
-            function soundReset() {
-                playTone(300, 0.15, 'sawtooth', 0.06);
-                setTimeout(function() { playTone(200, 0.2, 'sawtooth', 0.05); }, 150);
-            }
-
-            // =============================================================
-            // ===== CONFIG =====
-            // =============================================================
-            const TOTAL_PITCH = 4;
-            const TOTAL_ACTIVITY = 1;
-
-            let mode = 'activity';
-            let step = 0;
-            let counterDone = false;
-            let barsDone = false;
-
-            // =============================================================
-            // ===== ELEMENTOS =====
-            // =============================================================
-            const tabActivity = document.getElementById('tabActivity');
-            const tabPitch = document.getElementById('tabPitch');
-            const badge = document.getElementById('badge');
-
-            const allSteps = document.querySelectorAll('.step');
-            const dots = document.querySelectorAll('.dot');
-
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const ctaPitch = document.getElementById('ctaPitch');
-            const ctaActivity = document.getElementById('ctaActivity');
-            const resetBtn = document.getElementById('resetBtn');
-
-            const counterNum = document.getElementById('counterNum');
-
-            const barSi = document.getElementById('barSi');
-            const barDepende = document.getElementById('barDepende');
-            const barNo = document.getElementById('barNo');
-            const pctSi = document.getElementById('pctSi');
-            const pctDepende = document.getElementById('pctDepende');
-            const pctNo = document.getElementById('pctNo');
-            const giro = document.getElementById('giro');
-
-            // =============================================================
-            // ===== FUNCIONES =====
-            // =============================================================
-
-            function getTotalSteps() {
-                return mode === 'pitch' ? TOTAL_PITCH : TOTAL_ACTIVITY;
-            }
-
-            function getActiveSteps() {
-                return document.querySelectorAll('.step[data-mode="' + mode + '"]');
-            }
-
-            function render() {
-                const total = getTotalSteps();
-                const active = getActiveSteps();
-
-                allSteps.forEach(s => s.style.display = 'none');
-                active.forEach(s => s.style.display = '');
-
-                active.forEach((s, i) => {
-                    s.classList.toggle('active', i === step);
+                // Eventos de los botones de voto
+                votarSi.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (supabase) {
+                        votar('si');
+                    } else {
+                        alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
+                        // Simular voto en modo demo
+                        const demoData = { si: resultados.si + 1, depende: resultados.depende, no: resultados.no };
+                        actualizarUI(demoData);
+                    }
                 });
 
-                dots.forEach((d, i) => {
-                    d.classList.toggle('hidden', i >= total);
-                    d.classList.toggle('active', i === step);
+                votarDepende.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (supabase) {
+                        votar('depende');
+                    } else {
+                        alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
+                        const demoData = { si: resultados.si, depende: resultados.depende + 1, no: resultados.no };
+                        actualizarUI(demoData);
+                    }
                 });
 
-                prevBtn.disabled = (step === 0);
+                votarNo.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (supabase) {
+                        votar('no');
+                    } else {
+                        alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
+                        const demoData = { si: resultados.si, depende: resultados.depende, no: resultados.no + 1 };
+                        actualizarUI(demoData);
+                    }
+                });
 
-                const isLast = (step === total - 1);
+                // Evento de reset
+                resetBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (supabase) {
+                        reiniciarVotos();
+                    } else {
+                        if (confirm('⚠️ Modo demostración. ¿Reiniciar votos de ejemplo?')) {
+                            const demoData = { si: 0, depende: 0, no: 0 };
+                            barsAnimated = false;
+                            giro.style.display = 'none';
+                            actualizarUI(demoData);
+                        }
+                    }
+                });
 
-                if (mode === 'pitch') {
-                    nextBtn.style.display = isLast ? 'none' : '';
-                    ctaPitch.style.display = isLast ? '' : 'none';
-                    ctaActivity.style.display = 'none';
-                } else {
-                    nextBtn.style.display = 'none';
-                    ctaPitch.style.display = 'none';
-                    ctaActivity.style.display = '';
-                }
+                console.log('🚀 Aplicación iniciada');
             }
 
-            function goTo(index) {
-                const total = getTotalSteps();
-                if (index < 0 || index >= total || index === step) return;
+            // Ejecutar al cargar la página
+            document.addEventListener('DOMContentLoaded', init);
 
-                soundStep();
+        })();
+    </script>
 
-                step = index;
-                render();
-
-                if (mode === 'pitch' && step === 1 && !counterDone) {
-                    animateCounter();
-                }
-                if (mode === 'activity' && step === 0 && !barsDone) {
-                    animateBars();
-                }
-            }
-
-            function setMode(newMode) {
-                if (newMode === mode) return;
-
-                soundClick();
-
-                mode = newMode;
-                step = 0;
-                counterDone = false;
-                barsDone = false;
-
-                tabActivity.classList.toggle('active', mode === 'activity');
-                tabPitch.classList.toggle('active', mode === 'pitch');
-
-                if (mode === 'activity') {
-                    badge.textContent = '📱 Modo: Actividad para estudiantes';
-                    badge.className = 'badge activity';
-                } else {
-                    badge.textContent = '🎤 Modo: Pitch de venta';
-                    badge.className = 'badge pitch';
-                }
-
-                resetState();
-
-                render();
-
-                if (mode === 'pitch' && step === 1) {
-                    setTimeout(animateCounter, 300);
-                }
-                if (mode === 'activity' && step === 0) {
-                    setTimeout(animateBars, 400);
-                }
-            }
-
-            function resetState() {
-                counterDone = false;
-                barsDone = false;
-                if (counterNum) counterNum.textContent = '0';
-                if (barSi) barSi.style.width = '0%';
-                if (barDepende) barDepende.style.width = '0%';
-                if (barNo) barNo.style.width = '0%';
-                if (pctSi) pctSi.textContent = '0%';
-                if (pctDepende) pctDepende.textContent = '0%';
-                if (pctNo) pctNo.textContent = '0%';
-                if (giro) giro.style.display = 'none';
-            }
-
-            function fullReset() {
-                soundReset();
-
-                const currentMode = mode;
-                step = 0;
-                counterDone = false;
-                barsDone = false;
-                resetState();
-
-                render();
-
-                if (mode === 'pitch' && step === 1) {
-                    setTimeout(animateCounter, 300);
-                }
-                if (mode === 'activity' && step === 0) {
-                    setTimeout(animateBars, 400);
-                }
-            }
-
-            // =============================================================
-            // ===== ANIMACIONES =====
-            // =============================================================
-
-            function animateCounter() {
-                if (counterDone) return;
-                counterDone = true;
-                const target = 300;
-                const startTime = performance.now();
-
-                function update(t) {
-                    const elapsed = t - startTime;
-                    const p = Math.min(elapsed / 1200, 1);
-                    const eased = 1 - Math.pow(1 - p, 3);
-                    const val = Math.round(target * eased);
-                    counterNum.textContent = val + '%';
-                    if (
+</body>
+</html>
