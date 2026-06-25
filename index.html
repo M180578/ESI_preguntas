@@ -4,20 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Identidad Digital Segura · Votación en Vivo</title>
-
-    <!-- ===== SUPABASE CLIENT ===== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
-        /* ===== RESET Y BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background: #0a0e1a;
             min-height: 100vh;
             display: flex;
@@ -25,7 +16,6 @@
             align-items: center;
             padding: 16px;
         }
-
         .card {
             max-width: 820px;
             width: 100%;
@@ -34,380 +24,81 @@
             padding: 30px 28px 22px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            position: relative;
         }
-
-        .step-icon {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .step-label {
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 0.6rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .step h2 {
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 10px;
-        }
-
-        .step h2 .highlight {
-            background: linear-gradient(135deg, #00c8ff, #7b61ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .step p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.98rem;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-
-        /* ===== ACTIVIDAD ===== */
-        .box {
-            background: rgba(255, 200, 0, 0.03);
-            border: 1px solid rgba(255, 200, 0, 0.08);
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin: 10px 0 8px;
-        }
-
-        .box .q {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: #ffd866;
-            margin-bottom: 10px;
-        }
-
-        .box .opts {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
-        }
-
+        .step-icon { font-size: 2rem; display: block; margin-bottom: 2px; }
+        .step-label { color: rgba(255,255,255,0.2); font-size: 0.6rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+        .step h2 { color: #fff; font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 10px; }
+        .step h2 .highlight { background: linear-gradient(135deg, #00c8ff, #7b61ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .step p { color: rgba(255,255,255,0.7); font-size: 0.98rem; line-height: 1.6; margin-bottom: 8px; }
+        .box { background: rgba(255,200,0,0.03); border: 1px solid rgba(255,200,0,0.08); border-radius: 14px; padding: 16px 20px; margin: 10px 0 8px; }
+        .box .q { font-size: 1.05rem; font-weight: 600; color: #ffd866; margin-bottom: 10px; }
+        .box .opts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
         .box .opts button {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 100px;
             padding: 8px 20px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255,255,255,0.7);
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
         }
-
-        .box .opts button:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .box .opts button:active:not(:disabled) {
-            transform: scale(0.96);
-        }
-
-        .box .opts button .emoji {
-            margin-right: 6px;
-        }
-
-        .box .opts button.voted {
-            background: rgba(0, 200, 255, 0.15);
-            border-color: #00c8ff;
-            color: #fff;
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.1);
-        }
-
-        .box .opts button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .bars {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .bars .item {
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .bars .item .top {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 3px;
-        }
-
-        .bars .item .top .count {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .bars .item .track {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 100px;
-            overflow: hidden;
-        }
-
-        .bars .item .track .fill {
-            height: 100%;
-            border-radius: 100px;
-            width: 0%;
-            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .fill.si {
-            background: linear-gradient(90deg, #00c8ff, #7b61ff);
-        }
-        .fill.depende {
-            background: linear-gradient(90deg, #f7971e, #ffd200);
-        }
-        .fill.no {
-            background: linear-gradient(90deg, #ff6b6b, #ff3366);
-        }
-
-        .total-votes {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 0.75rem;
-            margin-top: 10px;
-        }
-
-        .total-votes strong {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* ===== GIRO ===== */
-        .giro-wrapper {
-            display: none;
-            margin-top: 14px;
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        .giro-wrapper.visible {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .giro {
-            padding: 14px 18px;
-            background: rgba(255, 200, 0, 0.04);
-            border-left: 3px solid #ffd200;
-            border-radius: 0 10px 10px 0;
-            color: rgba(255, 255, 255, 0.85);
-            font-style: italic;
-            font-size: 0.92rem;
-            line-height: 1.6;
-        }
-
-        .giro strong {
-            color: #ffd866;
-            font-style: normal;
-        }
-
-        .giro .final {
-            display: block;
-            margin-top: 10px;
-            font-size: 1rem;
-            color: #fff;
-            font-weight: 600;
-            font-style: normal;
-            background: rgba(255, 200, 0, 0.06);
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 200, 0, 0.06);
-        }
-
-        /* ===== BOTONES ===== */
-        .btn-finalizar {
-            background: linear-gradient(135deg, #ff6b6b, #ff3366);
-            color: #fff;
-            border: none;
-            border-radius: 100px;
-            padding: 10px 28px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            margin-top: 12px;
-            box-shadow: 0 4px 20px rgba(255, 50, 100, 0.15);
-        }
-
-        .btn-finalizar:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 35px rgba(255, 50, 100, 0.25);
-        }
-
-        .btn-finalizar:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn-finalizar.finalizado {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.3);
-            box-shadow: none;
-        }
-
-        .btn-finalizar.finalizado:hover {
-            transform: none;
-        }
-
-        .btn-reset {
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 100px;
-            padding: 6px 16px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            margin-top: 12px;
-        }
-
-        .btn-reset:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
-
-        .btn-reset:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .footer {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.04);
-            font-size: 0.45rem;
-            letter-spacing: 1.5px;
-            margin-top: 16px;
-        }
-
-        .status {
-            text-align: center;
-            font-size: 0.7rem;
-            margin-top: 6px;
-        }
-
-        .status.connected {
-            color: #4ade80;
-        }
-        .status.disconnected {
-            color: #f87171;
-        }
-        .status.loading {
-            color: #fbbf24;
-        }
-
-        .acciones {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        /* ===== RESPONSIVE ===== */
+        .box .opts button:hover:not(:disabled) { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .box .opts button:active:not(:disabled) { transform: scale(0.96); }
+        .box .opts button .emoji { margin-right: 6px; }
+        .box .opts button.voted { background: rgba(0,200,255,0.15); border-color: #00c8ff; color: #fff; box-shadow: 0 0 20px rgba(0,200,255,0.1); }
+        .box .opts button:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .bars { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+        .bars .item { flex: 1; min-width: 80px; }
+        .bars .item .top { display: flex; justify-content: space-between; font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+        .bars .item .top .count { color: #fff; font-weight: 600; }
+        .bars .item .track { height: 8px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+        .bars .item .track .fill { height: 100%; border-radius: 100px; width: 0%; transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
+        .fill.si { background: linear-gradient(90deg, #00c8ff, #7b61ff); }
+        .fill.depende { background: linear-gradient(90deg, #f7971e, #ffd200); }
+        .fill.no { background: linear-gradient(90deg, #ff6b6b, #ff3366); }
+        .total-votes { text-align: center; color: rgba(255,255,255,0.2); font-size: 0.75rem; margin-top: 10px; }
+        .total-votes strong { color: rgba(255,255,255,0.5); }
+        .giro-wrapper { display: none; margin-top: 14px; animation: fadeIn 0.6s ease forwards; }
+        .giro-wrapper.visible { display: block; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+        .giro { padding: 14px 18px; background: rgba(255,200,0,0.04); border-left: 3px solid #ffd200; border-radius: 0 10px 10px 0; color: rgba(255,255,255,0.85); font-style: italic; font-size: 0.92rem; line-height: 1.6; }
+        .giro strong { color: #ffd866; font-style: normal; }
+        .giro .final { display: block; margin-top: 10px; font-size: 1rem; color: #fff; font-weight: 600; font-style: normal; background: rgba(255,200,0,0.06); padding: 10px 16px; border-radius: 8px; border: 1px solid rgba(255,200,0,0.06); }
+        .btn-finalizar { background: linear-gradient(135deg, #ff6b6b, #ff3366); color: #fff; border: none; border-radius: 100px; padding: 10px 28px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: inherit; margin-top: 12px; box-shadow: 0 4px 20px rgba(255,50,100,0.15); }
+        .btn-finalizar:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 35px rgba(255,50,100,0.25); }
+        .btn-finalizar:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-finalizar.finalizado { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); box-shadow: none; }
+        .btn-finalizar.finalizado:hover { transform: none; }
+        .btn-reset { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 100px; padding: 6px 16px; font-size: 0.7rem; cursor: pointer; transition: all 0.3s ease; font-family: inherit; margin-top: 12px; }
+        .btn-reset:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: #fff; }
+        .btn-reset:disabled { opacity: 0.3; cursor: not-allowed; }
+        .footer { text-align: center; color: rgba(255,255,255,0.04); font-size: 0.45rem; letter-spacing: 1.5px; margin-top: 16px; }
+        .status { text-align: center; font-size: 0.7rem; margin-top: 6px; }
+        .status.connected { color: #4ade80; }
+        .status.disconnected { color: #f87171; }
+        .status.loading { color: #fbbf24; }
+        .acciones { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+        .footnote { color: rgba(255,255,255,0.12); font-size: 0.65rem; margin-top: 8px; }
         @media (max-width: 640px) {
-            .card {
-                padding: 18px 12px 14px;
-                border-radius: 20px;
-            }
-
-            .step h2 {
-                font-size: 1.2rem;
-            }
-
-            .step p {
-                font-size: 0.88rem;
-            }
-
-            .box .opts button {
-                padding: 6px 14px;
-                font-size: 0.8rem;
-                flex: 1;
-                min-width: 80px;
-                text-align: center;
-            }
-
-            .box .q {
-                font-size: 0.92rem;
-            }
-
-            .giro {
-                font-size: 0.82rem;
-                padding: 10px 14px;
-            }
-
-            .giro .final {
-                font-size: 0.85rem;
-                padding: 8px 12px;
-            }
-
-            .btn-finalizar {
-                padding: 8px 20px;
-                font-size: 0.8rem;
-                width: 100%;
-                text-align: center;
-            }
-
-            .acciones {
-                flex-direction: column;
-            }
-
-            .acciones .btn-reset {
-                width: 100%;
-                text-align: center;
-            }
+            .card { padding: 18px 12px 14px; border-radius: 20px; }
+            .step h2 { font-size: 1.2rem; }
+            .step p { font-size: 0.88rem; }
+            .box .opts button { padding: 6px 14px; font-size: 0.8rem; flex: 1; min-width: 80px; text-align: center; }
+            .box .q { font-size: 0.92rem; }
+            .giro { font-size: 0.82rem; padding: 10px 14px; }
+            .giro .final { font-size: 0.85rem; padding: 8px 12px; }
+            .btn-finalizar { padding: 8px 20px; font-size: 0.8rem; width: 100%; text-align: center; }
+            .acciones { flex-direction: column; }
+            .acciones .btn-reset { width: 100%; text-align: center; }
         }
-
-        @media (max-width: 400px) {
-            .card {
-                padding: 12px 8px 10px;
-            }
-
-            .step h2 {
-                font-size: 1rem;
-            }
-        }
+        @media (max-width: 400px) { .card { padding: 12px 8px 10px; } .step h2 { font-size: 1rem; } }
     </style>
 </head>
 <body>
 
     <div class="card">
-
-        <!-- ===== CONTENIDO ===== -->
         <div class="step" style="display:block;">
             <span class="step-icon">📸</span>
             <div class="step-label">🎯 Gancho · Votación en vivo</div>
@@ -420,44 +111,23 @@
                 <div class="q">📱 ¿Le darías tu celular a un desconocido para que saque una foto o vea información privada y la suba a sus redes?</div>
 
                 <div class="opts" id="optionsContainer">
-                    <button data-opcion="si" id="votarSi">
-                        <span class="emoji">✅</span> Sí, sin problemas
-                    </button>
-                    <button data-opcion="depende" id="votarDepende">
-                        <span class="emoji">🤔</span> Depende
-                    </button>
-                    <button data-opcion="no" id="votarNo">
-                        <span class="emoji">❌</span> No, ni loco/a
-                    </button>
+                    <button data-opcion="si" id="votarSi"><span class="emoji">✅</span> Sí, sin problemas</button>
+                    <button data-opcion="depende" id="votarDepende"><span class="emoji">🤔</span> Depende</button>
+                    <button data-opcion="no" id="votarNo"><span class="emoji">❌</span> No, ni loco/a</button>
                 </div>
 
                 <div class="bars" id="barsContainer">
                     <div class="item">
-                        <div class="top">
-                            <span>✅ Sí</span>
-                            <span class="count" id="countSi">0</span>
-                        </div>
-                        <div class="track">
-                            <div class="fill si" id="barSi" style="width:0%;"></div>
-                        </div>
+                        <div class="top"><span>✅ Sí</span><span class="count" id="countSi">0</span></div>
+                        <div class="track"><div class="fill si" id="barSi" style="width:0%;"></div></div>
                     </div>
                     <div class="item">
-                        <div class="top">
-                            <span>🤔 Depende</span>
-                            <span class="count" id="countDepende">0</span>
-                        </div>
-                        <div class="track">
-                            <div class="fill depende" id="barDepende" style="width:0%;"></div>
-                        </div>
+                        <div class="top"><span>🤔 Depende</span><span class="count" id="countDepende">0</span></div>
+                        <div class="track"><div class="fill depende" id="barDepende" style="width:0%;"></div></div>
                     </div>
                     <div class="item">
-                        <div class="top">
-                            <span>❌ No</span>
-                            <span class="count" id="countNo">0</span>
-                        </div>
-                        <div class="track">
-                            <div class="fill no" id="barNo" style="width:0%;"></div>
-                        </div>
+                        <div class="top"><span>❌ No</span><span class="count" id="countNo">0</span></div>
+                        <div class="track"><div class="fill no" id="barNo" style="width:0%;"></div></div>
                     </div>
                 </div>
 
@@ -467,13 +137,11 @@
 
                 <div class="status loading" id="statusIndicator">🔄 Conectando...</div>
 
-                <!-- ===== BOTONES DE ACCIÓN ===== -->
                 <div class="acciones">
                     <button class="btn-finalizar" id="finalizarBtn">📢 Finalizar encuesta</button>
                     <button class="btn-reset" id="resetBtn">🔄 Reiniciar votos</button>
                 </div>
 
-                <!-- ===== GIRO (oculto hasta finalizar) ===== -->
                 <div class="giro-wrapper" id="giroWrapper">
                     <div class="giro">
                         <strong>💡 El giro:</strong><br>
@@ -482,16 +150,11 @@
                         <span class="final">🔥 "Esa contradicción es el punto de partida de lo que vamos a ver hoy. Se llama <strong>Identidad Digital</strong>."</span>
                     </div>
                 </div>
-
             </div>
 
-            <p class="footnote" style="color:rgba(255,255,255,0.12);font-size:0.65rem;margin-top:8px;">
-                💡 Los votos se guardan en la nube. Actualizaciones en tiempo real.
-            </p>
+            <p class="footnote">💡 Los votos se guardan en la nube. Actualizaciones en tiempo real.</p>
         </div>
-
         <div class="footer">IDENTIDAD DIGITAL SEGURA · Cuidados, Derechos y Responsabilidades</div>
-
     </div>
 
     <script>
@@ -502,14 +165,11 @@
             // ===== CONFIGURACIÓN DE SUPABASE =====
             // =============================================================
 
-// =============================================================
-// ===== CONFIGURACIÓN DE SUPABASE (VALORES DIRECTOS) =====
-// =============================================================
+            const SUPABASE_URL = 'https://pgvrmritmuscrfnvdxla.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
 
-const SUPABASE_URL = 'https://pgvrmritmuscrfnvdxla.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
             // =============================================================
-            // ===== INICIALIZAR SUPABASE =====
+            // ===== VARIABLES GLOBALES (accesibles desde la consola) =====
             // =============================================================
 
             let supabase = null;
@@ -517,8 +177,18 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
             let myVote = null;
             let isSubscribed = false;
             let encuestaFinalizada = false;
+            let resultados = { si: 0, depende: 0, no: 0 };
+            let totalVotos = 0;
 
-            // Elementos
+            // Exponer variables globalmente para debug
+            window.isSubscribed = false;
+            window.channel = null;
+            window.supabaseClient = null;
+
+            // =============================================================
+            // ===== ELEMENTOS DOM =====
+            // =============================================================
+
             const statusIndicator = document.getElementById('statusIndicator');
             const barSi = document.getElementById('barSi');
             const barDepende = document.getElementById('barDepende');
@@ -534,45 +204,43 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
             const votarDepende = document.getElementById('votarDepende');
             const votarNo = document.getElementById('votarNo');
 
-            let resultados = { si: 0, depende: 0, no: 0 };
-            let totalVotos = 0;
-
             // =============================================================
             // ===== CONECTAR A SUPABASE =====
             // =============================================================
 
             function conectarSupabase() {
-                const url = SUPABASE_URL;
-                const key = SUPABASE_ANON_KEY;
-
-                // Verificar si las variables están configuradas
-                if (!url || url === '{{SUPABASE_URL}}' || !key || key === '{{SUPABASE_ANON_KEY}}') {
-                    statusIndicator.textContent = '⚠️ Configuración pendiente. Conectá con Supabase.';
-                    statusIndicator.className = 'status disconnected';
-                    console.warn('⚠️ Variables de entorno de Supabase no configuradas.');
-                    return false;
-                }
-
                 try {
-                    supabase = window.supabase.createClient(url, key);
+                    if (!SUPABASE_URL || SUPABASE_URL === '') {
+                        throw new Error('SUPABASE_URL está vacío');
+                    }
+                    if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === '') {
+                        throw new Error('SUPABASE_ANON_KEY está vacío');
+                    }
+
+                    console.log('🔄 Intentando conectar a Supabase...');
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    window.supabaseClient = supabase;
                     statusIndicator.textContent = '✅ Conectado a Supabase';
                     statusIndicator.className = 'status connected';
                     console.log('✅ Conectado a Supabase');
                     return true;
                 } catch (error) {
-                    statusIndicator.textContent = '❌ Error de conexión: ' + error.message;
-                    statusIndicator.className = 'status disconnected';
                     console.error('❌ Error al conectar:', error);
+                    statusIndicator.textContent = '❌ Error: ' + error.message;
+                    statusIndicator.className = 'status disconnected';
                     return false;
                 }
             }
 
             // =============================================================
-            // ===== OBTENER VOTOS =====
+            // ===== CARGAR VOTOS =====
             // =============================================================
 
             async function cargarVotos() {
-                if (!supabase) return;
+                if (!supabase) {
+                    console.warn('⚠️ Supabase no inicializado');
+                    return;
+                }
 
                 try {
                     const { data, error } = await supabase
@@ -586,12 +254,13 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
                         if (conteo[v.opcion] !== undefined) conteo[v.opcion]++;
                     });
 
+                    console.log('📊 Votos cargados:', conteo);
                     actualizarUI(conteo);
                     return conteo;
 
                 } catch (error) {
                     console.error('❌ Error al cargar votos:', error);
-                    statusIndicator.textContent = '❌ Error al cargar votos';
+                    statusIndicator.textContent = '❌ Error: ' + error.message;
                     statusIndicator.className = 'status disconnected';
                     return null;
                 }
@@ -603,7 +272,6 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
 
             function actualizarUI(conteo) {
                 const total = conteo.si + conteo.depende + conteo.no;
-
                 resultados = conteo;
                 totalVotos = total;
 
@@ -645,24 +313,20 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
 
             async function votar(opcion) {
                 if (!supabase) {
-                    alert('⚠️ No hay conexión con el servidor. Intentá de nuevo.');
+                    alert('⚠️ No hay conexión con el servidor.');
                     return;
                 }
-
                 if (encuestaFinalizada) {
-                    alert('📢 La encuesta ya finalizó. No se pueden registrar más votos.');
+                    alert('📢 La encuesta ya finalizó.');
                     return;
                 }
-
                 if (myVote === opcion) return;
 
                 if (myVote) {
                     try {
                         const sessionId = obtenerSessionId();
-                        await supabase
-                            .from('votos')
-                            .delete()
-                            .eq('session_id', sessionId);
+                        console.log('🗑️ Eliminando voto anterior:', sessionId);
+                        await supabase.from('votos').delete().eq('session_id', sessionId);
                     } catch (e) {
                         console.warn('Error al eliminar voto anterior:', e);
                     }
@@ -670,15 +334,17 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
 
                 try {
                     const sessionId = obtenerSessionId();
-                    const { error } = await supabase
+                    console.log('🗳️ Votando:', opcion, 'Session:', sessionId);
+                    const { data, error } = await supabase
                         .from('votos')
-                        .insert({ opcion: opcion, session_id: sessionId });
+                        .insert({ opcion: opcion, session_id: sessionId })
+                        .select();
 
                     if (error) throw error;
 
+                    console.log('✅ Voto registrado:', data);
                     myVote = opcion;
                     actualizarBotones();
-                    playClickSound();
                     await cargarVotos();
 
                 } catch (error) {
@@ -686,10 +352,6 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
                     alert('❌ Error al registrar tu voto. Intentá de nuevo.');
                 }
             }
-
-            // =============================================================
-            // ===== SESSION ID =====
-            // =============================================================
 
             function obtenerSessionId() {
                 let id = localStorage.getItem('votacion_session_id');
@@ -706,21 +368,15 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
 
             function finalizarEncuesta() {
                 if (encuestaFinalizada) return;
-
                 encuestaFinalizada = true;
-
                 votarSi.disabled = true;
                 votarDepende.disabled = true;
                 votarNo.disabled = true;
-
                 finalizarBtn.textContent = '✅ Encuesta finalizada';
                 finalizarBtn.classList.add('finalizado');
                 finalizarBtn.disabled = true;
-
                 giroWrapper.classList.add('visible');
-                playCompleteSound();
-
-                console.log('📢 Encuesta finalizada. Mostrando resultados y giro.');
+                console.log('📢 Encuesta finalizada');
             }
 
             // =============================================================
@@ -732,42 +388,26 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
                     alert('⚠️ No hay conexión con el servidor.');
                     return;
                 }
-
-                if (!confirm('⚠️ ¿Seguro que querés eliminar todos los votos? Esta acción no se puede deshacer.')) {
-                    return;
-                }
+                if (!confirm('⚠️ ¿Seguro que querés eliminar todos los votos?')) return;
 
                 try {
                     resetBtn.disabled = true;
                     resetBtn.textContent = '⏳ Eliminando...';
-
-                    const { error } = await supabase
-                        .from('votos')
-                        .delete()
-                        .neq('id', 0);
-
+                    const { error } = await supabase.from('votos').delete().neq('id', 0);
                     if (error) throw error;
 
                     myVote = null;
                     encuestaFinalizada = false;
-
                     giroWrapper.classList.remove('visible');
-
                     finalizarBtn.textContent = '📢 Finalizar encuesta';
                     finalizarBtn.classList.remove('finalizado');
                     finalizarBtn.disabled = false;
-
                     votarSi.disabled = false;
                     votarDepende.disabled = false;
                     votarNo.disabled = false;
-
                     await cargarVotos();
-
                     resetBtn.textContent = '🔄 Reiniciar votos';
                     resetBtn.disabled = false;
-
-                    playResetSound();
-
                 } catch (error) {
                     console.error('❌ Error al reiniciar:', error);
                     alert('❌ Error al reiniciar los votos.');
@@ -782,33 +422,31 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
 
             function suscribirCambios() {
                 if (!supabase || isSubscribed) return;
-
                 try {
+                    console.log('🔄 Intentando suscribir a cambios...');
                     channel = supabase
                         .channel('tabla-votos')
-                        .on(
-                            'postgres_changes', {
-                                event: '*',
-                                schema: 'public',
-                                table: 'votos'
-                            },
-                            (payload) => {
-                                console.log('🔄 Cambio detectado:', payload);
-                                cargarVotos();
-                            }
-                        )
+                        .on('postgres_changes', {
+                            event: '*',
+                            schema: 'public',
+                            table: 'votos'
+                        }, (payload) => {
+                            console.log('🔄 Cambio detectado:', payload);
+                            cargarVotos();
+                        })
                         .subscribe((status) => {
+                            console.log('📡 Estado de suscripción:', status);
                             if (status === 'SUBSCRIBED') {
                                 isSubscribed = true;
+                                window.isSubscribed = true;
+                                window.channel = channel;
                                 console.log('✅ Suscrito a cambios en tiempo real');
                                 statusIndicator.textContent = '✅ Conectado · Tiempo real activo';
                                 statusIndicator.className = 'status connected';
                             } else {
-                                statusIndicator.textContent = '⚠️ Reconectando...';
-                                statusIndicator.className = 'status loading';
+                                console.warn('⚠️ Estado de suscripción:', status);
                             }
                         });
-
                 } catch (error) {
                     console.error('❌ Error al suscribir:', error);
                 }
@@ -867,87 +505,59 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CTjWzSx1q7473Az_o-gwmQ_YBLvk3Xb';
             // =============================================================
 
             async function init() {
-                const conectado = conectarSupabase();
+                console.log('🚀 Iniciando aplicación...');
+                console.log('🔍 SUPABASE_URL:', SUPABASE_URL);
+                console.log('🔍 SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY);
 
+                const conectado = conectarSupabase();
                 if (conectado) {
                     await cargarVotos();
                     suscribirCambios();
-                } else {
-                    statusIndicator.textContent = '📱 Modo demostración (sin conexión)';
-                    statusIndicator.className = 'status disconnected';
-                    const demoData = { si: 12, depende: 38, no: 50 };
-                    actualizarUI(demoData);
                 }
 
-                // Eventos de voto
-                votarSi.addEventListener('click', function(e) {
-                    e.preventDefault();
+                // ==== POLLING (fallback) ====
+                // Recarga votos cada 3 segundos para asegurar sincronización
+                setInterval(() => {
                     if (supabase && !encuestaFinalizada) {
-                        votar('si');
-                    } else if (!supabase) {
-                        alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
-                        const demoData = { si: resultados.si + 1, depende: resultados.depende, no: resultados.no };
-                        actualizarUI(demoData);
+                        cargarVotos();
+                        console.log('🔄 Polling: recargando votos...');
                     }
+                }, 3000);
+
+                // ==== EVENTOS ====
+
+                votarSi.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    votar('si');
                 });
 
-                votarDepende.addEventListener('click', function(e) {
+                votarDepende.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (supabase && !encuestaFinalizada) {
-                        votar('depende');
-                    } else if (!supabase) {
-                        alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
-                        const demoData = { si: resultados.si, depende: resultados.depende + 1, no: resultados.no };
-                        actualizarUI(demoData);
-                    }
+                    votar('depende');
                 });
 
-                votarNo.addEventListener('click', function(e) {
+                votarNo.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (supabase && !encuestaFinalizada) {
-                        votar('no');
-                    } else if (!supabase) {
-                        alert('📱 Modo demostración. En producción, los votos se guardan en la nube.');
-                        const demoData = { si: resultados.si, depende: resultados.depende, no: resultados.no + 1 };
-                        actualizarUI(demoData);
-                    }
+                    votar('no');
                 });
 
-                // Finalizar encuesta
-                finalizarBtn.addEventListener('click', function(e) {
+                finalizarBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     if (!encuestaFinalizada) {
-                        if (totalVotos === 0) {
-                            if (!confirm('⚠️ No hay votos registrados. ¿Finalizar encuesta de todas formas?')) {
-                                return;
-                            }
-                        }
+                        if (totalVotos === 0 && !confirm('⚠️ No hay votos. ¿Finalizar de todas formas?')) return;
                         finalizarEncuesta();
+                        playCompleteSound();
                     }
                 });
 
-                // Reset
-                resetBtn.addEventListener('click', function(e) {
+                resetBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (supabase) {
-                        reiniciarVotos();
-                    } else {
-                        if (confirm('⚠️ Modo demostración. ¿Reiniciar votos de ejemplo?')) {
-                            const demoData = { si: 0, depende: 0, no: 0 };
-                            encuestaFinalizada = false;
-                            giroWrapper.classList.remove('visible');
-                            finalizarBtn.textContent = '📢 Finalizar encuesta';
-                            finalizarBtn.classList.remove('finalizado');
-                            finalizarBtn.disabled = false;
-                            votarSi.disabled = false;
-                            votarDepende.disabled = false;
-                            votarNo.disabled = false;
-                            actualizarUI(demoData);
-                        }
-                    }
+                    reiniciarVotos();
+                    playResetSound();
                 });
 
-                console.log('🚀 Aplicación iniciada');
+                console.log('✅ Aplicación lista');
+                console.log('💡 Para debug: window.isSubscribed, window.supabaseClient');
             }
 
             document.addEventListener('DOMContentLoaded', init);
